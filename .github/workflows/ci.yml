@@ -24,6 +24,11 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: stable
+            - name: Clear macOS linker flags
+              if: runner.os == 'macOS'
+              run: |
+                  echo "RUSTFLAGS=" >> "$GITHUB_ENV"
+                  echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
             - name: Install dependencies
               if: runner.os == 'Linux'
               run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
