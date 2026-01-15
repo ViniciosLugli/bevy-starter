@@ -23,15 +23,21 @@ jobs:
                   key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
-            - name: Clear macOS linker flags
-              if: runner.os == 'macOS'
+                  toolchain: nightly
+            - name: Clear linker flags
+              if: runner.os != 'Windows'
               run: |
                   echo "RUSTFLAGS=" >> "$GITHUB_ENV"
                   echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
+            - name: Install macOS linker
+              if: runner.os == 'macOS'
+              run: |
+                  brew install llvm
+                  sudo mkdir -p /opt/homebrew/bin
+                  sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
             - name: Install dependencies
               if: runner.os == 'Linux'
-              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+              run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Build and run tests
               run: cargo test
 
@@ -50,9 +56,13 @@ jobs:
                   key: ubuntu-latest-cargo-doc-tests-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
+            - name: Clear linker flags
+              run: |
+                  echo "RUSTFLAGS=" >> "$GITHUB_ENV"
+                  echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
             - name: Install dependencies
-              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+              run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Run doc tests
               run: cargo test --doc --all-features
 
@@ -71,10 +81,14 @@ jobs:
                   key: ubuntu-latest-cargo-lint-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
                   components: rustfmt, clippy
+            - name: Clear linker flags
+              run: |
+                  echo "RUSTFLAGS=" >> "$GITHUB_ENV"
+                  echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
             - name: Install dependencies
-              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+              run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Run clippy
               run: cargo clippy --workspace --all-targets --all-features -- -Dwarnings
             - name: Check format
