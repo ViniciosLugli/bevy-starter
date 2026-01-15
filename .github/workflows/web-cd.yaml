@@ -1,0 +1,44 @@
+name: web-cd
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    build-web:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ubuntu-latest-cargo-web-${{ hashFiles('**/Cargo.lock') }}
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable
+            - name: Install dependencies
+              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+            - name: Install trunk
+              uses: jetli/trunk-action@v0.5.1
+              with:
+                  version: latest
+            - name: Add wasm target
+              run: rustup target add wasm32-unknown-unknown
+            - name: Build release
+              run: trunk build --release
+            - name: Optimize wasm
+              uses: NiklasEi/wasm-opt-action@v2.1.0
+              with:
+                  file: target/trunk/*.wasm
+            - name: Deploy to GitHub Pages
+              uses: JamesIves/github-pages-deploy-action@v4.8.0
+              with:
+                  branch: gh-pages
+                  folder: target/trunk

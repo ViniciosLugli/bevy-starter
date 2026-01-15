@@ -1,0 +1,193 @@
+name: build-cd
+
+on:
+    push:
+        tags:
+            - 'v[0-9]+.[0-9]+.[0-9]+*'
+    workflow_dispatch:
+        inputs:
+            version:
+                description: Version in the form v1.2.3
+                required: true
+                type: string
+
+env:
+    GAME_EXECUTABLE_NAME: starter
+
+permissions:
+    contents: write
+
+jobs:
+    get-version:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get tag
+              id: tag
+              run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+        outputs:
+            version: ${{ inputs.version || steps.tag.outputs.tag }}
+
+    build-linux:
+        runs-on: ubuntu-latest
+        needs: get-version
+        env:
+            VERSION: ${{ needs.get-version.outputs.version }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ubuntu-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable
+            - name: Install dependencies
+              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+            - name: Build release
+              run: cargo build --profile release-native
+            - name: Package release
+              run: |
+                  mkdir -p build/linux
+                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/linux/
+                  cp -r assets build/linux/
+                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux.tar.gz -C build/linux .
+            - name: Upload release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux.tar.gz
+                  asset_name: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux.tar.gz
+                  release_name: ${{ env.VERSION }}
+                  tag: ${{ env.VERSION }}
+                  overwrite: true
+
+    build-windows:
+        runs-on: windows-latest
+        needs: get-version
+        env:
+            VERSION: ${{ needs.get-version.outputs.version }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: windows-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable
+            - name: Build release
+              run: cargo build --profile release-native
+            - name: Package release
+              run: |
+                  mkdir build\windows
+                  copy target\release-native\${{ env.GAME_EXECUTABLE_NAME }}.exe build\windows\${{ env.GAME_EXECUTABLE_NAME }}.exe
+                  xcopy assets build\windows\assets /E /I /Y
+            - name: Zip release
+              uses: vimtor/action-zip@v1.2
+              with:
+                  files: build/windows/
+                  dest: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_windows.zip
+            - name: Upload release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_windows.zip
+                  asset_name: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_windows.zip
+                  release_name: ${{ env.VERSION }}
+                  tag: ${{ env.VERSION }}
+                  overwrite: true
+
+    build-macos:
+        runs-on: macos-latest
+        needs: get-version
+        env:
+            VERSION: ${{ needs.get-version.outputs.version }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: macos-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable
+            - name: Build release
+              run: cargo build --profile release-native
+            - name: Package release
+              run: |
+                  mkdir -p build/macos
+                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/macos/
+                  cp -r assets build/macos/
+                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos.tar.gz -C build/macos .
+            - name: Upload release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos.tar.gz
+                  asset_name: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos.tar.gz
+                  release_name: ${{ env.VERSION }}
+                  tag: ${{ env.VERSION }}
+                  overwrite: true
+
+    build-web:
+        runs-on: ubuntu-latest
+        needs: get-version
+        env:
+            VERSION: ${{ needs.get-version.outputs.version }}
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/cache@v5
+              with:
+                  path: |
+                      ~/.cargo/bin/
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      target/
+                  key: ubuntu-latest-cargo-web-release-${{ hashFiles('**/Cargo.lock') }}
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  toolchain: stable
+            - name: Install dependencies
+              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+            - name: Install trunk
+              uses: jetli/trunk-action@v0.5.1
+              with:
+                  version: latest
+            - name: Add wasm target
+              run: rustup target add wasm32-unknown-unknown
+            - name: Build release
+              run: trunk build --release
+            - name: Optimize wasm
+              uses: NiklasEi/wasm-opt-action@v2.1.0
+              with:
+                  file: target/trunk/*.wasm
+            - name: Zip release
+              uses: vimtor/action-zip@v1.2
+              with:
+                  files: target/trunk/
+                  dest: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_web.zip
+            - name: Upload release
+              uses: svenstaro/upload-release-action@v2
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_web.zip
+                  asset_name: ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_web.zip
+                  release_name: ${{ env.VERSION }}
+                  tag: ${{ env.VERSION }}
+                  overwrite: true
