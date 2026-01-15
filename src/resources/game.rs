@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Resource)]
-#[derive(Default)]
+#[derive(Resource, Default)]
 pub struct CoinState {
     pub collected: usize,
 }

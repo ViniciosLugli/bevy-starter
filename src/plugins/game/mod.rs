@@ -2,7 +2,11 @@ use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_enhanced_input::prelude::*;
 
-use crate::{components::PlayerInput, plugins::fonts::FontAssets, resources::{CoinState, FpsDisplay}};
+use crate::{
+    components::PlayerInput,
+    plugins::fonts::FontAssets,
+    resources::{CoinState, FpsDisplay},
+};
 
 mod constants;
 mod spawn;

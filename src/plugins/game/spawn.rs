@@ -3,9 +3,7 @@ use bevy::{prelude::*, text::FontSmoothing};
 use bevy_enhanced_input::prelude::*;
 
 use crate::{
-    components::{
-        Coin, CoinSlot, Ground, HudText, Jump, Move, Platform, Player, PlayerInput,
-    },
+    components::{Coin, CoinSlot, Ground, HudText, Jump, Move, Platform, Player, PlayerInput},
     plugins::fonts::FontAssets,
 };
 
