@@ -45,10 +45,6 @@ jobs:
             - uses: actions/configure-pages@v5
             - name: Build release
               run: trunk build --release
-            - name: Optimize wasm
-              uses: NiklasEi/wasm-opt-action@v2.1.0
-              with:
-                  file: target/trunk/*.wasm
             - uses: actions/upload-pages-artifact@v3
               with:
                   path: target/trunk
