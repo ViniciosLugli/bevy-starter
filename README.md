@@ -28,6 +28,24 @@ If you want the extra dev features then you can toggle them:
 cargo run --features dev
 ```
 
+## Web
+
+Install:
+http://127.0.0.1:8080/
+
+```
+rustup target add wasm32-unknown-unknown
+cargo install --locked trunk
+```
+
+Run:
+
+```
+trunk serve
+```
+
+Open: http://127.0.0.1:8080/
+
 ## Features
 
 -   Cargo configured according to Bevy guide with build optimizations

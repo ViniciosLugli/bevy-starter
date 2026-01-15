@@ -93,6 +93,10 @@ fn spawn_player(commands: &mut Commands, assets: &AssetServer) {
             actions!(PlayerInput[
                 (
                     Action::<Move>::new(),
+                    ActionSettings {
+                        consume_input: false,
+                        ..default()
+                    },
                     Bindings::spawn((
                         Cardinal::wasd_keys(),
                         Cardinal::arrows(),
