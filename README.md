@@ -22,16 +22,17 @@ You can build your game
 cargo run
 ```
 
-If you want the extra dev features then you can toggle them:
+Dev features (`dev_native`) are enabled by default, including hot reload and dev tools.
+
+To disable dev features for a clean build:
 
 ```
-cargo run --features dev
+cargo run --no-default-features
 ```
 
 ## Web
 
 Install:
-http://127.0.0.1:8080/
 
 ```
 rustup target add wasm32-unknown-unknown
@@ -51,7 +52,7 @@ Open: http://127.0.0.1:8080/
 -   Cargo configured according to Bevy guide with build optimizations
 -   [Avian](https://github.com/avianphysics/avian) physics
 -   [bevy_enhanced_input](https://github.com/simgine/bevy_enhanced_input) input
--   Starter plugins with game logic in `src/plugins/game.rs`
+-   Starter plugins with game logic in [`src/plugins/game/`](src/plugins/game/)
 -   `TLDR.md` for passing to tools like [`aider`](https://aider.chat/) and others
     that helps them get more recent context from Bevy
 
@@ -61,6 +62,8 @@ Open: http://127.0.0.1:8080/
 -   [avian](https://github.com/avianphysics/avian)
 -   [bevy_enhanced_input](https://github.com/simgine/bevy_enhanced_input)
 
-## Missing
+## CI/CD
 
--   Deployment
+-   `ci.yml` - tests, clippy, fmt (Windows/Linux/macOS)
+-   `web-cd.yaml` - GitHub Pages deployment (manual trigger)
+-   `build-cd.yaml` - release builds on tag push
