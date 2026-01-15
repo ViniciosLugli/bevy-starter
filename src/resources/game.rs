@@ -1,14 +1,9 @@
 use bevy::prelude::*;
 
 #[derive(Resource)]
+#[derive(Default)]
 pub struct CoinState {
     pub collected: usize,
-}
-
-impl Default for CoinState {
-    fn default() -> Self {
-        Self { collected: 0 }
-    }
 }
 
 #[derive(Resource)]
