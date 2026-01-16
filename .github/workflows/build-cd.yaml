@@ -52,10 +52,11 @@ jobs:
               run: cargo build --profile release-native
             - name: Package release
               run: |
-                  mkdir -p build/linux
-                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/linux/
-                  cp -r assets build/linux/
-                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux.tar.gz -C build/linux .
+                  package_dir=${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux
+                  mkdir -p build/linux/$package_dir
+                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/linux/$package_dir/
+                  cp -r assets build/linux/$package_dir/
+                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_linux.tar.gz -C build/linux $package_dir
             - name: Upload release
               uses: svenstaro/upload-release-action@v2
               with:
@@ -132,13 +133,14 @@ jobs:
                   sudo mkdir -p /opt/homebrew/bin
                   sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
             - name: Build release
-              run: cargo build --profile release-native
+              run: cargo build --profile release-native --no-default-features
             - name: Package release
               run: |
-                  mkdir -p build/macos
-                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/macos/
-                  cp -r assets build/macos/
-                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos.tar.gz -C build/macos .
+                  package_dir=${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos
+                  mkdir -p build/macos/$package_dir
+                  cp target/release-native/${{ env.GAME_EXECUTABLE_NAME }} build/macos/$package_dir/
+                  cp -r assets build/macos/$package_dir/
+                  tar -czf ${{ env.GAME_EXECUTABLE_NAME }}_${{ env.VERSION }}_macos.tar.gz -C build/macos $package_dir
             - name: Upload release
               uses: svenstaro/upload-release-action@v2
               with:
