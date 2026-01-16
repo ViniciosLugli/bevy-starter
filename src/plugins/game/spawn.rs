@@ -26,6 +26,7 @@ pub fn spawn_player(commands: &mut Commands, assets: &AssetServer) {
             Player,
             PlayerInput,
             Transform::from_xyz(0.0, 0.0, 0.0),
+            Visibility::default(),
             RigidBody::Dynamic,
             Collider::rectangle(PLAYER_SIZE.x, PLAYER_SIZE.y),
             LinearVelocity::ZERO,

@@ -5,7 +5,6 @@ use bevy::prelude::*;
 mod components;
 mod plugins;
 mod resources;
-mod styles;
 mod third_party;
 mod utils;
 
@@ -13,7 +12,7 @@ mod utils;
 /// modules directly.
 mod prelude {
     pub use super::*;
-    pub use {components::*, plugins::*, resources::*, styles::*, utils::*};
+    pub use {components::*, plugins::*, resources::*, utils::*};
 }
 
 pub struct AppPlugin;

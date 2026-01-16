@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Bevy Starter</title>
+		<link data-trunk rel="copy-dir" href=".." />
+		<link data-trunk rel="rust" data-cargo-no-default-features data-wasm-opt="s" href="../.." />
+		<style>
+			:root {
+				--web-bg-color: #2b2c2f;
+				--web-color: #ffffff;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+			}
+
+			body {
+				background-color: var(--web-bg-color);
+				color: var(--web-color);
+			}
+
+			.center {
+				width: 100%;
+				height: 100%;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				flex-direction: column;
+			}
+
+			canvas {
+				display: block;
+				outline: none;
+				width: 100% !important;
+				height: 100% !important;
+			}
+
+			#loading-screen {
+				position: fixed;
+				inset: 0;
+				background-color: var(--web-bg-color);
+			}
+
+			.spinner {
+				width: 128px;
+				height: 128px;
+				border: 10px solid transparent;
+				border-bottom-color: #ececec;
+				border-right-color: #b2b2b2;
+				border-top-color: #787878;
+				border-radius: 50%;
+				box-sizing: border-box;
+				animation: spin 1.5s linear infinite;
+			}
+
+			@keyframes spin {
+				0% {
+					transform: rotate(0deg);
+				}
+
+				100% {
+					transform: rotate(360deg);
+				}
+			}
+		</style>
+		<script type="module">
+			;(function () {
+				const audioContextList = []
+				const userInputEventNames = ['click', 'contextmenu', 'auxclick', 'dblclick', 'mousedown', 'mouseup', 'pointerup', 'touchend', 'keydown', 'keyup']
+
+				self.AudioContext = new Proxy(self.AudioContext, {
+					construct(target, args) {
+						const result = new target(...args)
+						audioContextList.push(result)
+						return result
+					},
+				})
+
+				function resumeAllContexts(_event) {
+					let count = 0
+
+					audioContextList.forEach((context) => {
+						if (context.state !== 'running') {
+							context.resume()
+						} else {
+							count++
+						}
+					})
+
+					if (count === audioContextList.length) {
+						userInputEventNames.forEach((eventName) => {
+							document.removeEventListener(eventName, resumeAllContexts)
+						})
+					}
+				}
+
+				userInputEventNames.forEach((eventName) => {
+					document.addEventListener(eventName, resumeAllContexts)
+				})
+			})()
+		</script>
+	</head>
+
+	<body>
+		<noscript>JavaScript support is required to run this app</noscript>
+		<canvas id="bevy" width="0" height="0">Canvas support is required to run this app</canvas>
+		<div id="loading-screen" class="center">
+			<span class="spinner"></span>
+		</div>
+
+		<script type="module">
+			const loadingScreen = document.getElementById('loading-screen')
+			const canvas = document.getElementById('bevy')
+
+			const isReady = () => canvas.width > 0 && canvas.height > 0
+
+			if (isReady()) {
+				loadingScreen.style.display = 'none'
+			} else {
+				const observer = new MutationObserver(() => {
+					if (isReady()) {
+						loadingScreen.style.display = 'none'
+						observer.disconnect()
+					}
+				})
+				observer.observe(canvas, {
+					attributes: true,
+					attributeFilter: ['width', 'height'],
+				})
+			}
+		</script>
+	</body>
+</html>
