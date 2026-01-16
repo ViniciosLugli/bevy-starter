@@ -45,9 +45,9 @@ jobs:
                   key: ubuntu-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
             - name: Install dependencies
-              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+              run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Build release
               run: cargo build --profile release-native
             - name: Package release
@@ -84,7 +84,7 @@ jobs:
                   key: windows-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
             - name: Build release
               run: cargo build --profile release-native
             - name: Package release
@@ -125,7 +125,12 @@ jobs:
                   key: macos-latest-cargo-release-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
+            - name: Install macOS linker
+              run: |
+                  brew install llvm
+                  sudo mkdir -p /opt/homebrew/bin
+                  sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
             - name: Build release
               run: cargo build --profile release-native
             - name: Package release
@@ -162,9 +167,9 @@ jobs:
                   key: ubuntu-latest-cargo-web-release-${{ hashFiles('**/Cargo.lock') }}
             - uses: dtolnay/rust-toolchain@stable
               with:
-                  toolchain: stable
+                  toolchain: nightly
             - name: Install dependencies
-              run: sudo apt-get update; sudo apt-get install g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+              run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Install trunk
               uses: jetli/trunk-action@v0.5.1
               with:
