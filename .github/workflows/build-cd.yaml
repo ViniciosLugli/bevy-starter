@@ -86,6 +86,8 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+            - name: Force LLVM codegen on Windows
+              run: echo "CARGO_PROFILE_RELEASE_NATIVE_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
             - name: Build release
               run: cargo build --profile release-native
             - name: Package release
@@ -132,6 +134,8 @@ jobs:
                   brew install llvm
                   sudo mkdir -p /opt/homebrew/bin
                   sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
+            - name: Use ld64.lld
+              run: echo "RUSTFLAGS=-Clink-arg=-fuse-ld=/opt/homebrew/bin/ld64.lld" >> "$GITHUB_ENV"
             - name: Build release
               run: cargo build --profile release-native --no-default-features
             - name: Package release

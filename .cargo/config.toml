@@ -90,6 +90,9 @@ debug = "line-tables-only"
 [profile.dev.package."*"]
 codegen-backend = "llvm"
 
+[profile.test]
+codegen-backend = "llvm"
+
 [profile.test.package."*"]
 codegen-backend = "llvm"
 

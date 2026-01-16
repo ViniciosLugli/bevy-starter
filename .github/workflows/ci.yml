@@ -34,6 +34,11 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+            - name: Force LLVM codegen on Windows
+              if: runner.os == 'Windows'
+              run: |
+                  echo "CARGO_PROFILE_DEV_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
+                  echo "CARGO_PROFILE_TEST_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
             - name: Clear linker flags
               if: runner.os != 'Windows'
               run: |
