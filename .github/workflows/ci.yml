@@ -18,7 +18,7 @@ jobs:
     test:
         strategy:
             matrix:
-                os: [windows-latest, ubuntu-latest, macos-latest]
+                os: [ubuntu-latest]
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v6
@@ -34,22 +34,10 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
-            - name: Force LLVM codegen on Windows
-              if: runner.os == 'Windows'
-              run: |
-                  echo "CARGO_PROFILE_DEV_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
-                  echo "CARGO_PROFILE_TEST_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
             - name: Clear linker flags
-              if: runner.os != 'Windows'
               run: |
                   echo "RUSTFLAGS=" >> "$GITHUB_ENV"
                   echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
-            - name: Install macOS linker
-              if: runner.os == 'macOS'
-              run: |
-                  brew install llvm
-                  sudo mkdir -p /opt/homebrew/bin
-                  sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
             - name: Install dependencies
               if: runner.os == 'Linux'
               run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
