@@ -46,6 +46,10 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+            - name: Clear linker flags
+              run: |
+                  echo "RUSTFLAGS=" >> "$GITHUB_ENV"
+                  echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
             - name: Install dependencies
               run: sudo apt-get update; sudo apt-get install clang mold g++ pkg-config libx11-dev libasound2-dev libudev-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
             - name: Build release
@@ -86,6 +90,10 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+            - name: Clear linker flags
+              run: |
+                  Add-Content $env:GITHUB_ENV "RUSTFLAGS="
+                  Add-Content $env:GITHUB_ENV "CARGO_ENCODED_RUSTFLAGS="
             - name: Force LLVM codegen on Windows
               run: echo "CARGO_PROFILE_RELEASE_NATIVE_CODEGEN_BACKEND=llvm" >> "$GITHUB_ENV"
             - name: Build release
@@ -129,15 +137,15 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   toolchain: nightly
+            - name: Clear linker flags
+              run: |
+                  echo "RUSTFLAGS=" >> "$GITHUB_ENV"
+                  echo "CARGO_ENCODED_RUSTFLAGS=" >> "$GITHUB_ENV"
             - name: Install macOS linker
               run: |
                   brew install llvm
                   sudo mkdir -p /opt/homebrew/bin
                   sudo ln -sf "$(brew --prefix llvm)/bin/ld64.lld" /opt/homebrew/bin/ld64.lld
-            - name: Use ld64.lld
-              run: |
-                  echo "/opt/homebrew/bin" >> "$GITHUB_PATH"
-                  echo "RUSTFLAGS=-Clink-arg=-fuse-ld=ld64.lld" >> "$GITHUB_ENV"
             - name: Build release
               run: cargo build --profile release-native --no-default-features
             - name: Package release
