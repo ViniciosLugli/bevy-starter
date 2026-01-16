@@ -34,3 +34,6 @@ impl Plugin for AppPlugin {
         app.add_plugins(plugins::debug::plugin);
     }
 }
+pub use components::{Coin, CoinSlot, Player};
+pub use plugins::game::{collect_coins, update_coin_counter};
+pub use resources::CoinState;

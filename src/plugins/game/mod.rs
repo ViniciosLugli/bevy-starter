@@ -14,6 +14,7 @@ mod systems;
 
 use spawn::*;
 use systems::*;
+pub use systems::{collect_coins, update_coin_counter};
 
 pub(crate) fn plugin(app: &mut App) {
     app.add_input_context::<PlayerInput>()
