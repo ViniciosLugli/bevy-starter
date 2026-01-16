@@ -8,8 +8,8 @@ use crate::{
 };
 
 use super::constants::{
-    COIN_ICON_SIZE, COIN_RADIUS, COIN_SIZE, COIN_SLOTS, PLATFORM_SIZE, PLAYER_SIZE,
-    SMALL_PLATFORM_SIZE,
+    COIN_ICON_SIZE, COIN_RADIUS, COIN_SIZE, COIN_SLOT_EMPTY_COLOR, COIN_SLOTS, HUD_TEXT_COLOR,
+    PLATFORM_SIZE, PLAYER_SIZE, SMALL_PLATFORM_SIZE,
 };
 
 #[derive(Clone, Copy)]
@@ -160,14 +160,13 @@ pub fn spawn_hud(commands: &mut Commands, fonts: &FontAssets) {
             font_smoothing: FontSmoothing::None,
             ..default()
         },
-        TextColor(Color::srgb(0.9, 0.9, 0.9)),
+        TextColor(HUD_TEXT_COLOR),
         HudText,
     ));
 }
 
 pub fn spawn_coin_counter(commands: &mut Commands, assets: &AssetServer) {
     let coin_texture = assets.load("textures/ferris.png");
-    let slot_color = Color::srgb(0.35, 0.35, 0.35);
 
     let root = commands
         .spawn((
@@ -193,7 +192,7 @@ pub fn spawn_coin_counter(commands: &mut Commands, assets: &AssetServer) {
             },
             ImageNode {
                 image: coin_texture.clone(),
-                color: slot_color,
+                color: COIN_SLOT_EMPTY_COLOR,
                 ..default()
             },
             CoinSlot { index },

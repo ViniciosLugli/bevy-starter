@@ -11,7 +11,10 @@ use crate::{
     utils::format_hud_text,
 };
 
-use super::constants::{COIN_SLOTS, JUMP_SPEED, PLAYER_SIZE, PLAYER_SPEED};
+use super::constants::{
+    COIN_SLOT_EMPTY_COLOR, COIN_SLOT_FILLED_COLOR, COIN_SLOTS, JUMP_SPEED, PLAYER_SIZE,
+    PLAYER_SPEED,
+};
 
 pub fn apply_player_input(
     mut players: Query<(&Transform, &mut LinearVelocity, &CollidingEntities), With<Player>>,
@@ -106,9 +109,9 @@ pub fn update_coin_counter(
 
     for (slot, mut image) in slots.iter_mut() {
         image.color = if slot.index < coin_state.collected {
-            Color::WHITE
+            COIN_SLOT_FILLED_COLOR
         } else {
-            Color::srgb(0.35, 0.35, 0.35)
+            COIN_SLOT_EMPTY_COLOR
         };
     }
 }

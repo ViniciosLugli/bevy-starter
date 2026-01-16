@@ -12,6 +12,7 @@ mod constants;
 mod spawn;
 mod systems;
 
+pub use constants::{COIN_SLOT_EMPTY_COLOR, COIN_SLOT_FILLED_COLOR, HUD_TEXT_COLOR};
 use spawn::*;
 use systems::*;
 pub use systems::{collect_coins, update_coin_counter};

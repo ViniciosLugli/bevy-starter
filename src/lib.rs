@@ -35,5 +35,6 @@ impl Plugin for AppPlugin {
     }
 }
 pub use components::{Coin, CoinSlot, Player};
+pub use plugins::game::{COIN_SLOT_EMPTY_COLOR, COIN_SLOT_FILLED_COLOR, HUD_TEXT_COLOR};
 pub use plugins::game::{collect_coins, update_coin_counter};
 pub use resources::CoinState;

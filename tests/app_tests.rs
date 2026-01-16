@@ -1,6 +1,9 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
-use starter::{Coin, CoinSlot, CoinState, Player, collect_coins, update_coin_counter};
+use starter::{
+    COIN_SLOT_EMPTY_COLOR, COIN_SLOT_FILLED_COLOR, Coin, CoinSlot, CoinState, Player,
+    collect_coins, update_coin_counter,
+};
 
 fn setup_app() -> App {
     let mut app = App::new();
@@ -41,7 +44,7 @@ fn update_coin_counter_sets_slot_colors() {
         app.world_mut().spawn((
             CoinSlot { index },
             ImageNode {
-                color: Color::srgb(0.35, 0.35, 0.35),
+                color: COIN_SLOT_EMPTY_COLOR,
                 ..default()
             },
         ));
@@ -55,9 +58,9 @@ fn update_coin_counter_sets_slot_colors() {
     let mut query = app.world_mut().query::<(&CoinSlot, &ImageNode)>(); // Borrow from world_mut to satisfy query lifetime.
     for (slot, image) in query.iter(app.world()) {
         let expected = if slot.index < 2 {
-            Color::WHITE
+            COIN_SLOT_FILLED_COLOR
         } else {
-            Color::srgb(0.35, 0.35, 0.35)
+            COIN_SLOT_EMPTY_COLOR
         };
         assert_eq!(image.color, expected);
     }
